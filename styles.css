@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Гарантирует, что фон занимает всю высоту экрана */
+    width: 100vw;
+    flex-direction: column;
+    overflow: hidden; /* Исключает скролл и фиксирует фон */
+}
+
+.container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85); /* Полупрозрачный контейнер */
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 450px;
+}
+
+.header {
+    margin-bottom: 15px;
+}
+
+.header-gif {
+    max-width: 80px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 22px;
+    color: #333;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#canvas {
+    border: 1px solid #ccc;
+    background-color: white;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.upload-btn {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+button {
+    font-size: 16px;
+    padding: 12px 24px;
+    margin: 8px;
+    cursor: pointer;
+    border-radius: 30px;
+    background-color: #ff8c00;
+    border: none;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    max-width: 220px;
+}
+
+button:hover {
+    background-color: #e07b00;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.98);
+}

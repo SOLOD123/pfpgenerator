@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
+    <title>PFP Генератор</title>
     <style>
         * {
             margin: 0;
@@ -18,15 +18,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100vh; /* Гарантирует, что фон занимает всю высоту экрана */
             width: 100vw;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Исключает скролл и фиксирует фон */
         }
 
         .container {
             text-align: center;
-            background: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.85); /* Полупрозрачный контейнер */
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -63,6 +63,7 @@
             max-width: 400px;
             height: 400px;
             cursor: pointer;
+            touch-action: none; /* Отключает стандартное масштабирование на мобильных устройствах */
         }
 
         .controls {
@@ -104,18 +105,18 @@
     </style>
 </head>
 <body>
+    <!-- Основной контейнер -->
     <div class="container">
         <div class="header">
             <img class="header-gif" src="images/loader.gif" alt="Загрузка...">
-            <h1></h1>
         </div>
+        <h1>PFP Генератор</h1>
 
         <div class="content">
             <canvas id="canvas"></canvas>
-
             <div class="controls">
-                <input type="file" id="upload" class="upload-btn" accept="image/*">
-                <button id="generate">Генерировать</button>
+                <input class="upload-btn" type="file" id="upload" accept="image/*">
+                <button id="generate">Генерировать накладку</button>
                 <a id="download" href="#" download="pfp.png">
                     <button>Скачать</button>
                 </a>
@@ -124,36 +125,30 @@
     </div>
 
     <script>
+        // Инициализация
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const maxCanvasSize = 400; // Ограничение канваса 400x400
         let img = new Image();
         let overlayImg = new Image();
         let overlayX = 0;
         let overlayY = 0;
-        let overlayScale = 0.3; // Масштаб накладки (измените по необходимости)
+        let overlayScale = 1;
 
-        // Устанавливаем размер канваса
+        // Устанавливаем адаптивный размер канваса
         function resizeCanvas() {
-            canvas.width = Math.min(maxCanvasSize, document.querySelector('.container').clientWidth - 20);
-            canvas.height = Math.min(maxCanvasSize, canvas.width); // Канвас будет квадратным
+            canvas.width = 400;  // Максимальная ширина канваса
+            canvas.height = 400; // Максимальная высота канваса
         }
 
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // Функция загрузки изображения
+        // Функция загрузки основного изображения
         function loadImage(file) {
             const reader = new FileReader();
             reader.onload = function(event) {
                 img.src = event.target.result;
                 img.onload = function() {
-                    const scale = Math.min(maxCanvasSize / img.width, maxCanvasSize / img.height);
-                    const newWidth = img.width * scale;
-                    const newHeight = img.height * scale;
-                    
-                    canvas.width = newWidth;
-                    canvas.height = newHeight;
                     drawCanvas();
                 };
             };
@@ -161,20 +156,22 @@
         }
 
         // Функция загрузки накладки
-        function loadOverlay(url) {
-            overlayImg.src = url;
-            overlayImg.onload = function() {
-                drawCanvas();
+        function loadOverlay(file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                overlayImg.src = event.target.result;
+                overlayImg.onload = function() {
+                    drawCanvas();
+                };
             };
+            reader.readAsDataURL(file);
         }
 
         // Функция отрисовки
         function drawCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем канвас
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Отображаем основное изображение
-            const overlayWidth = overlayImg.width * overlayScale;
-            const overlayHeight = overlayImg.height * overlayScale;
-            ctx.drawImage(overlayImg, overlayX, overlayY, overlayWidth, overlayHeight); // Отображаем накладку
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(overlayImg, overlayX, overlayY, overlayImg.width * overlayScale, overlayImg.height * overlayScale);
         }
 
         // Обработчик загрузки изображения
@@ -185,12 +182,16 @@
         // Кнопка "Генерировать"
         document.getElementById('generate').addEventListener('click', function() {
             const overlayImages = [
-                'images/overlay1.png',
-                'images/overlay2.png',
-                'images/overlay3.png'
+                'https://yourserver.com/overlay1.png',
+                'https://yourserver.com/overlay2.png',
+                'https://yourserver.com/overlay3.png'
             ];
             const randomOverlay = overlayImages[Math.floor(Math.random() * overlayImages.length)];
-            loadOverlay(randomOverlay); // Загружаем случайную накладку
+
+            overlayImg.src = randomOverlay;
+            overlayImg.onload = function() {
+                drawCanvas();
+            };
         });
 
         // Кнопка "Скачать"
@@ -201,59 +202,51 @@
             link.click();
         });
 
-        // Перемещение накладки (мышь + тач-события)
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-
-        function startDrag(x, y) {
-            if (x >= overlayX && x <= overlayX + overlayImg.width * overlayScale &&
-                y >= overlayY && y <= overlayY + overlayImg.height * overlayScale) {
-                isDragging = true;
-                startX = x - overlayX;
-                startY = y - overlayY;
-            }
-        }
-
-        function moveDrag(x, y) {
-            if (isDragging) {
-                requestAnimationFrame(function() {
-                    overlayX = x - startX;
-                    overlayY = y - startY;
-                    drawCanvas();
-                });
-            }
-        }
-
-        function stopDrag() {
-            isDragging = false;
-        }
-
-        // Обработчики мыши
-        canvas.addEventListener('mousedown', (e) => startDrag(e.offsetX, e.offsetY));
-        canvas.addEventListener('mousemove', (e) => moveDrag(e.offsetX, e.offsetY));
-        canvas.addEventListener('mouseup', stopDrag);
-        canvas.addEventListener('mouseleave', stopDrag);
-
-        // Обработчики тач-событий
-        canvas.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            startDrag(touch.clientX - rect.left, touch.clientY - rect.top);
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            moveDrag(touch.clientX - rect.left, touch.clientY - rect.top);
-        });
-        canvas.addEventListener('touchend', stopDrag);
-
         // Масштабирование накладки
         canvas.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            overlayScale *= e.deltaY > 0 ? 0.9 : 1.1;
+            e.preventDefault();  // Останавливает зум страницы
+            const scaleAmount = e.deltaY > 0 ? 0.9 : 1.1;
+            overlayScale *= scaleAmount;
+
+            // Ограничиваем масштабирование (например, от 0.5 до 3)
+            overlayScale = Math.max(0.5, Math.min(overlayScale, 3));
+
             drawCanvas();
         });
+
+        // Обработчики тач-событий для мобильных устройств
+        let initialTouchDistance = null;
+        let initialScale = overlayScale;
+
+        canvas.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialTouchDistance = Math.sqrt(dx * dx + dy * dy);
+                initialScale = overlayScale;
+            }
+        });
+
+        canvas.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2 && initialTouchDistance !== null) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const currentTouchDistance = Math.sqrt(dx * dx + dy * dy);
+
+                // Масштабируем накладку в зависимости от изменения расстояния между пальцами
+                overlayScale = initialScale * (currentTouchDistance / initialTouchDistance);
+
+                // Ограничиваем масштабирование
+                overlayScale = Math.max(0.5, Math.min(overlayScale, 3));
+
+                drawCanvas();
+            }
+        });
+
+        canvas.addEventListener('touchend', function() {
+            initialTouchDistance = null;  // Сбросить расстояние после окончания жеста
+        });
+
     </script>
 </body>
 </html>

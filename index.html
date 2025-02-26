@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>PFP Генератор</title>
     <style>
         * {
@@ -22,6 +22,7 @@
             width: 100vw;
             flex-direction: column;
             overflow: hidden; /* Исключает скролл и фиксирует фон */
+            touch-action: none; /* Отключаем жесты на всей странице */
         }
 
         .container {
@@ -63,7 +64,7 @@
             max-width: 400px;
             height: 400px;
             cursor: pointer;
-            touch-action: none; /* Отключает стандартное масштабирование на мобильных устройствах */
+            touch-action: none; /* Включаем жесты только для канваса */
         }
 
         .controls {

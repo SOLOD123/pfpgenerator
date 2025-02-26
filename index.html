@@ -111,15 +111,15 @@
         <div class="header">
             <img class="header-gif" src="images/loader.gif" alt="Загрузка...">
         </div>
-        <h1>PFP Генератор</h1>
+        <h1>/h1>
 
         <div class="content">
             <canvas id="canvas"></canvas>
             <div class="controls">
                 <input class="upload-btn" type="file" id="upload" accept="image/*">
-                <button id="generate">Генерировать накладку</button>
+                <button id="generate">Generate</button>
                 <a id="download" href="#" download="pfp.png">
-                    <button>Скачать</button>
+                    <button>Download</button>
                 </a>
             </div>
         </div>
@@ -183,9 +183,9 @@
         // Кнопка "Генерировать"
         document.getElementById('generate').addEventListener('click', function() {
             const overlayImages = [
-                'https://yourserver.com/overlay1.png',
-                'https://yourserver.com/overlay2.png',
-                'https://yourserver.com/overlay3.png'
+                'images/overlay1.png',
+                'images/overlay2.png',
+                'images/overlay3.png'
             ];
             const randomOverlay = overlayImages[Math.floor(Math.random() * overlayImages.length)];
 
